@@ -3,7 +3,7 @@
 $upload = new Upload('img');
 $upload
         ->file_name('uploaded')
-        ->upload_to('/home/user/files/')
+        ->upload_to('upload/')
         ->run();
 
 if (!$upload->was_uploaded) {
