@@ -60,10 +60,10 @@ class Upload {
 
     /**
      * File source temp
-     * @access private
+     * @access public
      * @var string 
      */
-    private $file_src_temp;
+    var $file_src_temp;
 
     /**
      * Uploaded file MIME type
@@ -72,6 +72,27 @@ class Upload {
      * @var string
      */
     var $file_src_mime;
+
+    /**
+     * final file name
+     * @access public
+     * @var string 
+     */
+    var $final_file_name;
+
+    /**
+     * file width resolution
+     * @access public
+     * @var integer 
+     */
+    var $file_width;
+
+    /**
+     * file height resolution
+     * @access public
+     * @var integer 
+     */
+    var $file_height;
 
     /**
      * Set this variable to change the maximum size in bytes for an uploaded file
@@ -191,15 +212,12 @@ class Upload {
      */
     public function __construct($img) {
         $file = $_FILES[$img];
-
-
-
         if (!isset($file)) {
             $this->error = 'image can not be loaded, Please check the input name if it is equal to the constructor parameter of the class or check for the tag in the form enctype="multipart/form-data"';
             $this->was_uploaded = false;
             return false;
         }
-
+    
         // extract info from file uploaded
         $this->file_src_name = $file["name"];
         $this->file_src_temp = $file["tmp_name"];
@@ -207,6 +225,7 @@ class Upload {
         $this->file_src_errors = $file['error'];
         $this->file_src_mime = $file['type'];
         $this->file_src_name_ext = pathinfo($file["name"], PATHINFO_EXTENSION);
+
         $this->was_uploaded = true;
         return true;
     }
@@ -218,10 +237,12 @@ class Upload {
     public function run() {
 
         if (!$this->file_name) {
-            $path = $this->upload_to . $this->file_name . '.' . $this->file_src_name_ext;
+            $file = $this->file_name . '.' . $this->file_src_name_ext;
+            $path = $this->upload_to . $file;
         } else {
             $hash = md5(uniqid(rand(), true));
-            $path = $this->upload_to . $hash . '.' . $this->file_src_name_ext;
+            $file = $hash . '.' . $this->file_src_name_ext;
+            $path = $this->upload_to . $file;
         }
 
         // checks MIME type which are allowed
@@ -291,6 +312,11 @@ class Upload {
         // checks if not occurred an error to upload file
         if ($this->was_uploaded) {
             if (move_uploaded_file($this->file_src_temp, $path)) {
+                $this->final_file_name = $file;
+                // extracts image dimensions 
+                list($w, $h) = getimagesize($path);
+                $this->file_width = $w;
+                $this->file_height = $h;
                 return true;
             } else {
                 $this->was_uploaded = false;
