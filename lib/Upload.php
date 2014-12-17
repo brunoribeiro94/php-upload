@@ -60,10 +60,10 @@ class Upload {
 
     /**
      * File source temp
-     * @access public
+     * @access private
      * @var string 
      */
-    var $file_src_temp;
+    private $file_src_temp;
 
     /**
      * Uploaded file MIME type
@@ -235,7 +235,7 @@ class Upload {
      * @return boolean
      */
     public function run() {
-
+        // checks the final name if it is in shuffle mode
         if (!$this->file_name) {
             $file = $this->file_name . '.' . $this->file_src_name_ext;
             $path = $this->upload_to . $file;
@@ -332,6 +332,7 @@ class Upload {
      * @access private
      * @param  string  $path Path to create
      * @param  integer $mode Optional permissions
+     * 
      * @return boolean Success
      */
     private function r_mkdir($path, $mode = 0777) {
@@ -352,14 +353,6 @@ class Upload {
         $res = @mkdir($path, $mode);
         umask($old);
         return $res;
-    }
-
-    public function add_border($bool, $color, $width, $height) {
-        //loading the image
-        $image = new Imagick('images/picture.jpg');
-
-        //adding border
-        $image->borderImage('#000000', 20, 10);
     }
 
     /**
