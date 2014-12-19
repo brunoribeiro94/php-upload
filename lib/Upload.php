@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Class Upload
+ * Easy class upload files in PHP
+ * 
+ * @see README.md
+ * @version 0.4
+ * @access public
+ * @package Upload
+ * @todo added Border and crop image
+ * */
 class Upload {
 
     /**
@@ -128,9 +138,11 @@ class Upload {
 
     /**
      * Allowed MIME type
+     * 
+     * @access public
      * @var array 
      */
-    private $MIME_allowed = array(
+    var $MIME_allowed = array(
         "application/arj",
         "application/excel",
         "application/gnutar",
