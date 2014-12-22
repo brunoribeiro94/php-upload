@@ -5,10 +5,10 @@
  * Easy class upload files in PHP
  * 
  * @see README.md
- * @version 0.4
+ * @version 0.5
  * @access public
  * @package Upload
- * @todo added Border and crop image
+ * @todo added Border
  * */
 class Upload {
 
@@ -18,17 +18,6 @@ class Upload {
      * @var boolean
      */
     var $was_uploaded;
-
-    /**
-     * Set this variable to false if you don't want to check the MIME against the allowed list
-     *
-     * This variable is set to true by default for security reason
-     * Remember you can also set calling <pre> $Upload->mime_check($value_boolean) </pre>
-     * 
-     * @access private
-     * @var boolean
-     */
-    private $_mime_check = true;
 
     /**
      * Holds eventual error message in plain english
@@ -229,7 +218,7 @@ class Upload {
             $this->was_uploaded = false;
             return false;
         }
-    
+
         // extract info from file uploaded
         $this->file_src_name = $file["name"];
         $this->file_src_temp = $file["tmp_name"];
@@ -257,11 +246,13 @@ class Upload {
             $path = $this->upload_to . $file;
         }
 
+        $get_mime = isset($this->mime_check) ? true : false;
+
         // checks MIME type which are allowed
-        if ($this->_mime_check && empty($this->file_src_mime)) {
+        if ($get_mime && empty($this->file_src_mime)) {
             $this->was_uploaded = false;
             $this->error = "MIME type can't be detected!";
-        } else if ($this->_mime_check && !empty($this->file_src_mime) && !in_array($this->file_src_mime, $this->MIME_allowed)) {
+        } elseif ($get_mime && !empty($this->file_src_mime) && !in_array($this->file_src_mime, $this->MIME_allowed)) {
             $this->was_uploaded = false;
             $this->error = "Incorrect type of file";
         }
@@ -321,6 +312,8 @@ class Upload {
                 $this->error = _("File upload error (unknown error code)");
         }
 
+
+
         // checks if not occurred an error to upload file
         if ($this->was_uploaded) {
             if (move_uploaded_file($this->file_src_temp, $path)) {
@@ -329,6 +322,13 @@ class Upload {
                 list($w, $h) = getimagesize($path);
                 $this->file_width = $w;
                 $this->file_height = $h;
+
+                // the resize mode is available ?
+                if (isset($this->resize)) {
+                    $resize = new ResizeImage($path);
+                    $resize->resizeTo($this->image_x, $this->image_y, $this->resize_option);
+                    $resize->saveImage($path);
+                }
                 return true;
             } else {
                 $this->was_uploaded = false;
@@ -368,10 +368,12 @@ class Upload {
     }
 
     /**
-     * Final name of the uploaded file.
-     * use the value true for generate unique name ( random name)
+     * Set the variable this function to define final name of the uploaded file.
+     * use the value true for generate unique name (random name)
      * 
-     * @param string $file_name Final name of the file uploaded
+     * @access public
+     * @param boolean|string $file_name Final name of the file uploaded
+     * 
      * @return \Upload
      */
     public function file_name($file_name) {
@@ -380,9 +382,11 @@ class Upload {
     }
 
     /**
-     * Define auto replacement if the file already exist
+     * Set the variable this function to define auto replacement if the file already exist
      * 
+     * @access public
      * @param boolean $bool
+     * 
      * @return \Upload
      */
     public function auto_replace($bool) {
@@ -391,8 +395,12 @@ class Upload {
     }
 
     /**
-     * Define file max size allowed
-     * @param int $size Size in Bytes
+     * 
+     * Set the variable this function to define max size file is allowed
+     * 
+     * @access public
+     * @param integer $size Size max in Bytes 1 000 000 bytes is equal to 1 MB
+     * 
      * @return \Upload
      */
     public function file_max_size($size) {
@@ -401,22 +409,103 @@ class Upload {
     }
 
     /**
-     * Check the mime type against the allowed list
-     * @param boolean $bool Use false to don't check
+     * Set the variable this function to false if you don't want to check the MIME against the allowed list
+     * This variable is set to true by default for security reason
+     * 
+     * @access public
+     * @param boolean $bool Set to false to not check
+     * 
      * @return \Upload
      */
-    public function mime_check($bool) {
-        $this->_mime_check = $bool;
+    public function mime_check($bool = true) {
+        $this->mime_check = $bool;
         return $this;
     }
 
     /**
-     * set path location
+     * Set the variable this function to choose a new path location for the image
+     * 
+     * @access public
      * @param string $path Path location of the uploaded file, with an ending slash
+     * 
      * @return \Upload
      */
     public function upload_to($path) {
         $this->upload_to = $path;
+        return $this;
+    }
+
+    /**
+     * Set the variable this function to true to resize the file if it is an image
+     *
+     * You will probably want to set {@link image_x()} and {@link image_y()}, and maybe one of the ratio variables
+     *
+     * @access public
+     * @param boolean $bool Default value is false (no resizing)
+     * 
+     * @return \Upload
+     */
+    public function resize($bool = false) {
+        $this->resize = $bool;
+        return $this;
+    }
+
+    /**
+     * Set the variable this function to the wanted (or maximum/minimum) width for the processed image, in pixels
+     * 
+     * @access public
+     * @param integer $width Default value is 150
+     * 
+     * @return \Upload
+     */
+    public function image_x($width) {
+        $this->image_x = $width;
+        return $this;
+    }
+
+    /**
+     * Set the variable this function to the wanted (or maximum/minimum) height for the processed image, in pixels
+     * 
+     * @access public
+     * @param integer $height Default value is 150
+     * 
+     * @return \Upload
+     */
+    public function image_y($height = 150) {
+        $this->image_y = $height;
+        return $this;
+    }
+
+    /**
+     * 
+     * Set the variable this function to choose the scale option for the image
+     * 
+     * @access public
+     * @param string $option Default value is default, but you can use too <b>exact</b> or  <b>maxwidth</b> or <b>maxheight</b>
+     * 
+     * @return \Upload
+     */
+    public function resize_option($option = 'default') {
+        $this->resize_option = $option;
+        return $this;
+    }
+
+    /**
+     * alias for {@link resize()} instead of using both {@link image_x()} && {@link image_y()} && {@link resize_option()}
+     * 
+     * @access public
+     * 
+     * @param integer   $width          Max width of the image
+     * @param integer   $height         Max height of the image
+     * @param string    $resizeOption   Scale option for the image
+     * 
+     * @return \Upload
+     */
+    public function resize_to($width = 150, $height = 150, $resizeOption = 'default') {
+        self::resize(true);
+        self::image_x($width);
+        self::image_y($height);
+        self::resize_option($resizeOption);
         return $this;
     }
 
