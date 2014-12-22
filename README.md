@@ -43,7 +43,7 @@ install with the latest version.
 ## Simple Example
 -----------------
 ```php
-include("./Lib/Upload.php");
+include("../autoload.php");
 
 $upload = new Upload('img');
 $upload
@@ -58,10 +58,10 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Random Name Example
+## Example random name 
 -----------------
 ```php
-include("./Lib/Upload.php");
+include("../autoload.php");
 
 $upload = new Upload('img');
 $upload
@@ -76,10 +76,10 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Maximum Allowed Size Example
+## Example maximum allowed size
 -----------------
 ```php
-include("./Lib/Upload.php");
+include("../autoload.php");
 
 $upload = new Upload('img');
 $upload
@@ -95,16 +95,35 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Mime Checker Example
+## Example mime checker
 -----------------
 ```php
-include("./Lib/Upload.php");
+include("../autoload.php");
 
 $upload = new Upload('img');
 $upload
         ->file_name('uploaded')
         ->upload_to('upload/')
         ->mime_check(true) // see $MIME_allowed
+        ->run();
+
+if (!$upload->was_uploaded) {
+    die('Error : ' . $upload->error);
+} else {
+    echo 'image sent successfully !';
+}
+```
+
+## Example resize image
+-----------------
+```php
+include("../autoload.php");
+
+$upload = new Upload('img');
+$upload
+        ->file_name('resized')
+        ->upload_to('upload/')
+        ->resize_to(150, 150, 'exact') // resize exact to 150x150 pixels
         ->run();
 
 if (!$upload->was_uploaded) {
