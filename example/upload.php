@@ -1,6 +1,6 @@
 <?php
 
-include("./Lib/Upload.php");
+include("../autoload.php");
 
 $upload = new Upload('img');
 $upload
