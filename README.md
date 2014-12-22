@@ -19,6 +19,9 @@ themselves. To create libraries/packages please read the
 
     ``` json
     {
+        "repositories": [
+     	    {"type": "git", "url": "https://github.com/offboard/php-upload"}
+        ], 
         "require": {  
             "offboard/php-upload": "dev-master"
         }
