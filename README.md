@@ -95,7 +95,7 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Example mime checker
+## Example disable mime checker
 -----------------
 ```php
 include("../autoload.php");
@@ -104,7 +104,7 @@ $upload = new Upload('img');
 $upload
         ->file_name('uploaded')
         ->upload_to('upload/')
-        ->mime_check(true) // see $MIME_allowed
+        ->mime_check(false)
         ->run();
 
 if (!$upload->was_uploaded) {
