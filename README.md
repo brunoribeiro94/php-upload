@@ -88,7 +88,7 @@ $upload = new Upload('img');
 $upload
         ->file_name('uploaded')
         ->upload_to('upload/')
-        ->file_max_size(4000000) // 4000000 bytes = 4 MB
+        ->file_max_size(1000000 * 4) // 1000000 bytes = 1 MB
         ->run();
 
 if (!$upload->was_uploaded) {
