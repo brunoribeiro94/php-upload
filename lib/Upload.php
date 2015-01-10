@@ -268,11 +268,11 @@ class Upload {
         if ($this->get_auto_create_path) {
             if (!$this->r_mkdir($this->upload_to)) {
                 $this->was_uploaded = false;
-                $this->error = _("Destination directory can't be created. Can't carry on a process");
+                $this->error = "Destination directory can't be created. Can't carry on a process";
                 return false;
             }
         } elseif (!is_dir($this->upload_to)) {
-            $this->error = _("Destination directory doesn't exist. Can't carry on a process");
+            $this->error =  "Destination directory doesn't exist. Can't carry on a process";
             return false;
         }
 
@@ -293,23 +293,23 @@ class Upload {
                 break;
             case 1:
                 $this->was_uploaded = false;
-                $this->error = _("File upload error (the uploaded file exceeds the upload_max_filesize directive in php.ini)");
+                $this->error = "File upload error (the uploaded file exceeds the upload_max_filesize directive in php.ini)";
                 break;
             case 2:
                 $this->was_uploaded = false;
-                $this->error = _("File upload error (the uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form)");
+                $this->error = "File upload error (the uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the html form)";
                 break;
             case 3:
                 $this->was_uploaded = false;
-                $this->error = _("File upload error (the uploaded file was only partially uploaded)");
+                $this->error = "File upload error (the uploaded file was only partially uploaded)";
                 break;
             case 4:
                 $this->was_uploaded = false;
-                $this->error = _("File upload error (no file was uploaded)");
+                $this->error = "File upload error (no file was uploaded)";
                 break;
             default:
                 $this->was_uploaded = false;
-                $this->error = _("File upload error (unknown error code)");
+                $this->error = "File upload error (unknown error code)";
         }
 
 
