@@ -237,8 +237,13 @@ class Upload {
      */
     public function run() {
         // checks the final name if it is in shuffle mode
-        if (!$this->file_name) {
-            $file = $this->file_name . '.' . $this->file_src_name_ext;
+        if ($this->file_name !== true) {
+            // preserve the file extension if there
+            if (!pathinfo($this->file_name, PATHINFO_EXTENSION)) {
+                $file = $this->file_name . '.' . $this->file_src_name_ext;
+            } else {
+                $file = $this->file_name;
+            }
             $path = $this->upload_to . $file;
         } else {
             $hash = md5(uniqid(rand(), true));
