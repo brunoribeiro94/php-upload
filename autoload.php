@@ -44,7 +44,7 @@ if (!defined('T_TRAIT')) {
  *
  * Read documentation for more information.
  */
-class autoloadManager {
+class autoloadFileUpload {
 
     /**
      * Constants used by the checkClass method
@@ -441,6 +441,6 @@ class autoloadManager {
 }
 
 // add lib folder to load all class required
-$autoloadManager = new autoloadManager(null, autoloadManager::SCAN_ONCE);
+$autoloadManager = new autoloadFileUpload(null, autoloadFileUpload::SCAN_ONCE);
 $autoloadManager->addFolder(__DIR__ . '/lib/');
 $autoloadManager->register();
