@@ -168,6 +168,28 @@ if (!$upload->was_uploaded) {
 ```php
 include("../autoload.php");
 
+$file = $_FILES['document'];
+for ($i = 0; $i < count($file); $i++) {
+    $File = array(
+        'name' => $file['name'][$i],
+        'type' => $file['type'][$i],
+        'tmp_name' => $file['tmp_name'][$i],
+        'error' => $file['error'][$i],
+        'size' => $file['size'][$i]
+    );
+    // checks if exist
+    if (!empty($file['tmp_name'][$i])) {
+        $path = '../../../../public/images/customer/document/';
+        $upload = new Upload($File, false);
+        $upload
+                ->file_name(true)
+                ->upload_to($path)
+                ->run();
+        if (!$upload->was_uploaded) {
+            $erros[] = true;
+        }
+    }
+}
 
 $final = array();
 $file = $_FILES['img'];
