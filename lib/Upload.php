@@ -207,12 +207,15 @@ class Upload {
     );
 
     /**
+     * Magic Metthod
      * 
-     * @param type $img
+     * @param string|array $img Image Source
+     * @param boolean $autoRead Auto read $_FILE
+     * 
      * @return boolean
      */
-    public function __construct($img) {
-        $file = $_FILES[$img];
+    public function __construct($img, $autoRead = true) {
+        $file = $autoRead ? $_FILES[$img] : $img;
         if (!isset($file)) {
             $this->error = 'image can not be loaded, Please check the input name if it is equal to the constructor parameter of the class or check for the tag in the form enctype="multipart/form-data"';
             $this->was_uploaded = false;
