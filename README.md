@@ -168,7 +168,7 @@ if (!$upload->was_uploaded) {
 ```php
 include("../autoload.php");
 
-$file = $_FILES['document'];
+$file = $_FILES['img'];
 for ($i = 0; $i < count($file); $i++) {
     $File = array(
         'name' => $file['name'][$i],
@@ -186,9 +186,9 @@ for ($i = 0; $i < count($file); $i++) {
                 ->upload_to($path)
                 ->run();
         if (!$upload->was_uploaded) {
-            die("Error image {$k} : {$upload->error}");
+            die("Error image {$i} : {$upload->error}");
         } else {
-            echo "image {$k} sent successfully !";
+            echo "image {$i} sent successfully !";
         }
     }
 }
