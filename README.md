@@ -186,34 +186,10 @@ for ($i = 0; $i < count($file); $i++) {
                 ->upload_to($path)
                 ->run();
         if (!$upload->was_uploaded) {
-            $erros[] = true;
+            die("Error image {$k} : {$upload->error}");
+        } else {
+            echo "image {$k} sent successfully !";
         }
-    }
-}
-
-$final = array();
-$file = $_FILES['img'];
-for ($i = 0; $i < count($file); $i++) {
-    $final[] = array(
-        'name' => $file['name'][$i],
-        'type' => $file['type'][$i],
-        'tmp_name' => $file['tmp_name'][$i],
-        'error' => $file['error'][$i],
-        'size' => $file['size'][$i]
-    );
-}
-foreach($final as $k => $file){
-    $upload = new Upload($file,false);
-    $upload
-            ->file_name(true) // rand name
-            ->upload_to('upload/')
-            ->resize_to(150, 150, 'exact') // resize exact to 150x150 pixels
-            ->run();
-    
-    if (!$upload->was_uploaded) {
-        die("Error image {$k} : {$upload->error}");
-    } else {
-        echo "image {$k} sent successfully !";
     }
 }
 ```
