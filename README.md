@@ -179,7 +179,7 @@ for ($i = 0; $i < count($file); $i++) {
     );
     // checks if exist
     if (!empty($file['tmp_name'][$i])) {
-        $path = '../../../../public/images/customer/document/';
+        $path = 'document/';
         $upload = new Upload($File, false);
         $upload
                 ->file_name(true)
