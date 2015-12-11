@@ -15,6 +15,8 @@
         "php": ">=5.3.0"
     },
     "autoload": {
-       "classmap": ["autoload.php"]
+        "psr-0": {
+            "php-upload": "lib/"
+        }
     }
 }
