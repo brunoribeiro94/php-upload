@@ -169,27 +169,25 @@ if (!$upload->was_uploaded) {
 include("../autoload.php");
 
 $file = $_FILES['img'];
-for ($i = 0; $i < count($file); $i++) {
+if (empty($file['tmp_name'][0])) {
+    die("No images");
+}
+foreach ($file["tmp_name"] as $k => $v) {
     $File = array(
-        'name' => $file['name'][$i],
-        'type' => $file['type'][$i],
-        'tmp_name' => $file['tmp_name'][$i],
-        'error' => $file['error'][$i],
-        'size' => $file['size'][$i]
+      'name' => $file['name'][$k],
+      'type' => $file['type'][$k],
+       'tmp_name' => $file['tmp_name'][$k],
+       'error' => $file['error'][$k],
+       'size' => $file['size'][$k]
     );
-    // checks if exist
-    if (!empty($file['tmp_name'][$i])) {
-        $path = 'document/';
-        $upload = new Upload($File, false);
-        $upload
-                ->file_name(true)
-                ->upload_to($path)
-                ->run();
-        if (!$upload->was_uploaded) {
-            die("Error image {$i} : {$upload->error}");
-        } else {
-            echo "image {$i} sent successfully !";
-        }
-    }
+    $upload = new Upload($File, false);
+    $upload
+            ->file_name(true)
+            ->upload_to('document/')
+            ->run();
+    if (!$upload->was_uploaded) {
+       die("Error image {$i} : {$upload->error}");
+    } 
+    echo "image {$i} sent successfully !";
 }
 ```
