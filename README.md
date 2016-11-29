@@ -55,7 +55,7 @@ $upload
         ->run();
 
 if (!$upload->was_uploaded) {
-    die('Error : ' . $upload->error);
+    die("Error : {$upload->error}");
 } else {
     echo 'image sent successfully !';
 }
@@ -73,7 +73,7 @@ $upload
         ->run();
 
 if (!$upload->was_uploaded) {
-    die('Error : ' . $upload->error);
+    die("Error : {$upload->error}");
 } else {
     echo 'image sent successfully !';
 }
@@ -92,7 +92,7 @@ $upload
         ->run();
 
 if (!$upload->was_uploaded) {
-    die('Error : ' . $upload->error);
+    die("Error : {$upload->error}");
 } else {
     echo 'image sent successfully !';
 }
@@ -111,7 +111,7 @@ $upload
         ->run();
 
 if (!$upload->was_uploaded) {
-    die('Error : ' . $upload->error);
+    die("Error : {$upload->error}");
 } else {
     echo 'image sent successfully !';
 }
@@ -130,7 +130,7 @@ $upload
         ->run();
 
 if (!$upload->was_uploaded) {
-    die('Error : ' . $upload->error);
+    die("Error : {$upload->error}");
 } else {
     echo 'image sent successfully !';
 }
@@ -157,7 +157,7 @@ $upload
         ->run();
 
 if (!$upload->was_uploaded) {
-    die('Error : ' . $upload->error);
+    die("Error : {$upload->error}");
 } else {
     echo 'image sent successfully !';
 }
@@ -173,14 +173,13 @@ if (empty($file['tmp_name'][0])) {
     die("No images");
 }
 foreach ($file["tmp_name"] as $k => $v) {
-    $File = array(
+    $upload = new Upload(array(
       'name' => $file['name'][$k],
       'type' => $file['type'][$k],
        'tmp_name' => $file['tmp_name'][$k],
        'error' => $file['error'][$k],
        'size' => $file['size'][$k]
-    );
-    $upload = new Upload($File, false);
+    ), false);
     $upload
             ->file_name(true)
             ->upload_to('document/')
