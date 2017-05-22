@@ -164,6 +164,7 @@ class ResizeImage {
      * @param  integer  $height           Max height of the image
      * @param  string   $resizeOption     Scale option for the image
      *
+     * @version 0.2
      * @return Save new image
      */
     public function resizeTo($width, $height, $resizeOption = 'default') {
@@ -203,6 +204,12 @@ class ResizeImage {
         }
 
         $this->newImage = imagecreatetruecolor($this->resizeWidth, $this->resizeHeight);
+        if ($this->ext == "image/gif" OR $this->ext == "image/png") {
+            imagealphablending($this->newImage, false);
+            imagesavealpha($this->newImage, true);
+            $transparent = imagecolorallocatealpha($this->newImage, 255, 255, 255, 127);
+            imagefilledrectangle($this->newImage, 0, 0, $this->resizeWidth, $this->resizeHeight, $transparent);
+        }
         imagecopyresampled($this->newImage, $this->image, 0, 0, 0, 0, $this->resizeWidth, $this->resizeHeight, $this->origWidth, $this->origHeight);
     }
 
