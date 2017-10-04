@@ -1,240 +1,241 @@
 <?php
 
 /**
- * Resize image class will allow you to resize an image
+ * class watermark image
  *
- * Can resize to exact size
- * Max width size while keep aspect ratio
- * Max height size while keep aspect ratio
- * Automatic while keep aspect ratio
+ * add watermark on your images
+ * You can set align to center, right, right small
  */
-class ResizeImage {
+class Watermark {
 
     /**
-     * Extension of image 
-     * 
-     * @access private
-     * @var string 
-     */
-    private $ext;
-
-    /**
-     * created image
-     * 
-     * @access private
-     * @var string 
-     */
-    private $image;
-
-    /**
-     * 
-     * Name new image
-     * 
-     * @access private
-     * @var string 
-     */
-    private $newImage;
-
-    /**
-     * 
-     * Original width of image
-     * 
-     * @access private
-     * @var integer 
-     */
-    private $origWidth;
-
-    /**
-     * Original height of image 
-     * 
-     * @access private
-     * @var integer 
-     */
-    private $origHeight;
-
-    /**
-     * Resize width to new image resized
-     * 
-     * @access private
-     * @var integer 
-     */
-    private $resizeWidth;
-
-    /**
-     * Resize height to new image resized
-     * 
-     * @access private
-     * @var integer 
-     */
-    private $resizeHeight;
-
-    /**
-     * Class constructor requires to send through the image filename
      *
-     * @param string $filename - Filename of the image you want to resize
+     * @var image resource
      */
-    public function __construct($filename) {
-        if (file_exists($filename)) {
-            $this->setImage($filename);
-        } else {
-            throw new Exception('Image ' . $filename . ' can not be found, try another image.');
+    private $image = null;
+
+    /**
+     *
+     * @var image resource
+     */
+    private $watermark = null;
+
+    /**
+     *
+     * @var string
+     */
+    private $output_file = null;
+    private $mime;
+
+    /**
+     *
+     * @var int
+     */
+    private $type = '';
+
+    const BOTTOM_RIGHT = 1;
+    const CENTER = 2;
+    const BOTTOM_RIGHT_SMALL = 3;
+
+    /**
+     *
+     * @param string $path_to_image
+     */
+    public function __construct($path_to_image) {
+        if (file_exists($path_to_image)) {
+            $this->image = $path_to_image;
         }
+        $this->type = Watermark::BOTTOM_RIGHT;
     }
 
     /**
-     * Set the image variable by using image create
-     * @access private
-     * @param string $filename - The image filename
+     *
+     * @param string $path_to_watermark
+     * @return boolean
      */
-    private function setImage($filename) {
-        $size = getimagesize($filename);
-        $this->ext = $size['mime'];
+    public function setWatermarkImage($path_to_watermark) {
+        if (file_exists($path_to_watermark) && preg_match('/\.png$/i', $path_to_watermark)) {
+            $this->watermark = $path_to_watermark;
+            return true;
+        }
+        return false;
+    }
 
-        switch ($this->ext) {
+    /**
+     *
+     * @return boolean
+     */
+    public function save() {
+        $this->output_file = $this->image;
+        return $this->process();
+    }
+
+    /**
+     *
+     * @param string $path_to_image
+     * @return boolean
+     */
+    public function saveAs($path_to_image) {
+        $this->output_file = $path_to_image;
+        return $this->process();
+    }
+
+    /**
+     *
+     * @param int $type
+     */
+    public function setType($type) {
+        $this->type = $type;
+    }
+
+    /**
+     *
+     * @return boolean
+     */
+    private function process() {
+        $watermark = imagecreatefrompng($this->watermark);
+        if ($watermark) {
+            $target = getimagesize($this->image);
+            $this->mime = $target['mime'];
+            switch ($this->mime) {
+                // Image is a JPG
+                case 'image/jpg':
+                case 'image/jpeg':
+                    // create a jpeg extension
+                    $image = imagecreatefromjpeg($this->image);
+                    break;
+                // Image is a PNG
+                case 'image/png':
+                    $image = @imagecreatefrompng($this->image);
+                    break;
+                // Mime type not found
+                default:
+                    throw new Exception("File is not an image, please use another file type.", 1);
+            }
+            if ($image)
+                switch ($this->type) {
+                    case Watermark::BOTTOM_RIGHT:
+                        return $this->watermark_bottom_right($image, $watermark);
+                    case Watermark::CENTER:
+                        return $this->watermark_center($image, $watermark);
+                    case Watermark::BOTTOM_RIGHT_SMALL:
+                        return $this->watermark_bottom_right_small($image, $watermark);
+                    default:
+                        return true;
+                }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param image resource $image
+     * @param image resource $watermark
+     * @return boolean
+     */
+    private function watermark_bottom_right(&$image, &$watermark) {
+        $watermark_width = imagesx($watermark);
+        $watermark_height = imagesy($watermark);
+        $size = getimagesize($this->image);
+        $dest_x = $size[0] - $watermark_width - 5;
+        $dest_y = $size[1] - $watermark_height - 5;
+        imagecopy($image, $watermark, $dest_x, $dest_y, 0, 0, $watermark_width, $watermark_height);
+        switch ($this->mime) {
             // Image is a JPG
             case 'image/jpg':
             case 'image/jpeg':
                 // create a jpeg extension
-                $this->image = imagecreatefromjpeg($filename);
+                imagejpeg($image, $this->output_file, 100);
                 break;
-
-            // Image is a GIF
-            case 'image/gif':
-                $this->image = @imagecreatefromgif($filename);
-                break;
-
             // Image is a PNG
             case 'image/png':
-                $this->image = @imagecreatefrompng($filename);
+                imagepng($image, $this->output_file, round(abs((99 - 100) / 11.111111))); // quality 99%
                 break;
-
-            // Mime type not found
-            default:
-                throw new Exception("File is not an image, please use another file type.", 1);
         }
-
-        $this->origWidth = imagesx($this->image);
-        $this->origHeight = imagesy($this->image);
+        imagedestroy($image);
+        imagedestroy($watermark);
+        return true;
     }
 
     /**
-     * Save the image as the image type the original image was
-     * 
-     * @access public
-     * @param  String $savePath     The path to store the new image
-     * @param  string $imageQuality The qulaity level of image to create
      *
-     * @return Saves the image
+     * @param image resource $image
+     * @param image resource $watermark
+     * @return booelan
      */
-    public function saveImage($savePath, $imageQuality = "100") {
-        switch ($this->ext) {
+    private function watermark_center(&$image, &$watermark) {
+        $size = getimagesize($this->image);
+        $watermark_x = imagesx($watermark);
+        $watermark_y = imagesy($watermark);
+        $im_x = $size[0];
+        $im_y = $size[1];
+        $cof = $im_x / ($watermark_x * 1.3); // 5/1 = im_x/(wx*cof) ; wx*cof = im_x/5 ; cof = im_x/wx*5
+        $w = intval($watermark_x * $cof);
+        $h = intval($watermark_y * $cof);
+        $watermark_mini = ImageCreateTrueColor($w, $h);
+        imagealphablending($watermark_mini, false);
+        imagesavealpha($watermark_mini, true);
+        ImageCopyResampled($watermark_mini, $watermark, 0, 0, 0, 0, $w, $h, $watermark_x, $watermark_y);
+        $dest_x = $im_x - $w - (($im_x - $w) / 2);
+        $dest_y = $im_y - $h - (($im_y - $h) / 2);
+        imagecopy($image, $watermark_mini, $dest_x, $dest_y, 0, 0, $w, $h);
+        switch ($this->mime) {
+            // Image is a JPG
             case 'image/jpg':
             case 'image/jpeg':
-                // Check PHP supports this file type
-                if (imagetypes() & IMG_JPG) {
-                    imagejpeg($this->newImage, $savePath, $imageQuality);
-                }
+                // create a jpeg extension
+                imagejpeg($image, $this->output_file, 100);
                 break;
-
-            case 'image/gif':
-                // Check PHP supports this file type
-                if (imagetypes() & IMG_GIF) {
-                    imagegif($this->newImage, $savePath);
-                }
-                break;
-
+            // Image is a PNG
             case 'image/png':
-                $invertScaleQuality = 9 - round(($imageQuality / 100) * 9);
-
-                // Check PHP supports this file type
-                if (imagetypes() & IMG_PNG) {
-                    imagepng($this->newImage, $savePath, $invertScaleQuality);
-                }
+                imagepng($image, $this->output_file, round(abs((99 - 100) / 11.111111))); // quality 99%
                 break;
         }
-
-        imagedestroy($this->newImage);
+        imagedestroy($image);
+        imagedestroy($watermark);
+        return true;
     }
 
     /**
-     * Resize the image to these set dimensions
      *
-     * @access public
-     * @param  integer  $width            Max width of the image
-     * @param  integer  $height           Max height of the image
-     * @param  string   $resizeOption     Scale option for the image
-     *
-     * @version 0.2
-     * @return Save new image
+     * @param image resource $image
+     * @param image resource $watermark
+     * @return boolean
      */
-    public function resizeTo($width, $height, $resizeOption = 'default') {
-        switch (strtolower($resizeOption)) {
-            case 'exact':
-                $this->resizeWidth = $width;
-                $this->resizeHeight = $height;
-                break;
+    private function watermark_bottom_right_small(&$image, &$watermark) {
+        $size = getimagesize($this->image);
+        $orig_watermark_x = imagesx($watermark);
+        $orig_watermark_y = imagesy($watermark);
+        $im_x = $size[0];
+        $im_y = $size[1];
+        $cof = $im_x / ($orig_watermark_x * 5); // 5/1 = im_x/(wx*cof) ; wx*cof = im_x/5 ; cof = im_x/wx*5
+        $w = intval($orig_watermark_x * $cof);
+        $h = intval($orig_watermark_y * $cof);
+        $watermark_mini = ImageCreateTrueColor($w, $h);
+        imagealphablending($watermark_mini, false);
+        imagesavealpha($watermark_mini, true);
+        ImageCopyResampled($watermark_mini, $watermark, 0, 0, 0, 0, $w, $h, $orig_watermark_x, $orig_watermark_y);
+        //
+        $dest_x = $size[0] - $w - 5;
+        $dest_y = $size[1] - $h - 5;
 
-            case 'maxwidth':
-                $this->resizeWidth = $width;
-                $this->resizeHeight = $this->resizeHeightByWidth($width);
+        imagecopy($image, $watermark_mini, $dest_x, $dest_y, 0, 0, $w, $h);
+        switch ($this->mime) {
+            // Image is a JPG
+            case 'image/jpg':
+            case 'image/jpeg':
+                // create a jpeg extension
+                imagejpeg($image, $this->output_file, 100);
                 break;
-
-            case 'maxheight':
-                $this->resizeWidth = $this->resizeWidthByHeight($height);
-                $this->resizeHeight = $height;
-                break;
-
-            default:
-                if ($this->origWidth > $width || $this->origHeight > $height) {
-                    if ($this->origWidth > $this->origHeight) {
-                        $this->resizeHeight = $this->resizeHeightByWidth($width);
-                        $this->resizeWidth = $width;
-                    } else if ($this->origWidth < $this->origHeight) {
-                        $this->resizeWidth = $this->resizeWidthByHeight($height);
-                        $this->resizeHeight = $height;
-                    } else {
-                        $this->resizeWidth = $width;
-                        $this->resizeHeight = $height;
-                    }
-                } else {
-                    $this->resizeWidth = $width;
-                    $this->resizeHeight = $height;
-                }
+            // Image is a PNG
+            case 'image/png':
+                imagepng($image, $this->output_file, round(abs((99 - 100) / 11.111111))); // quality 99%
                 break;
         }
-
-        $this->newImage = imagecreatetruecolor($this->resizeWidth, $this->resizeHeight);
-        if ($this->ext == "image/gif" OR $this->ext == "image/png") {
-            imagealphablending($this->newImage, false);
-            imagesavealpha($this->newImage, true);
-            $transparent = imagecolorallocatealpha($this->newImage, 255, 255, 255, 127);
-            imagefilledrectangle($this->newImage, 0, 0, $this->resizeWidth, $this->resizeHeight, $transparent);
-        }
-        imagecopyresampled($this->newImage, $this->image, 0, 0, 0, 0, $this->resizeWidth, $this->resizeHeight, $this->origWidth, $this->origHeight);
-    }
-
-    /**
-     * Get the resized height from the width keeping the aspect ratio
-     *
-     * @access private
-     * @param  integer $width  Max image width
-     *
-     * @return Height keeping aspect ratio
-     */
-    private function resizeHeightByWidth($width) {
-        return floor(($this->origHeight / $this->origWidth) * $width);
-    }
-
-    /**
-     * Get the resized width from the height keeping the aspect ratio
-     *
-     * @access private
-     * @param  int $height - Max image height
-     *
-     * @return Width keeping aspect ratio
-     */
-    private function resizeWidthByHeight($height) {
-        return floor(($this->origWidth / $this->origHeight) * $height);
+        imagedestroy($image);
+        imagedestroy($watermark);
+        imagedestroy($watermark_mini);
+        return true;
     }
 
 }
