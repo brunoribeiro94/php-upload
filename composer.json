@@ -17,7 +17,8 @@
     "autoload": {
         "classmap": [
             "lib/Upload.php",
-            "lib/Upload/ResizeUpload.php"
+            "lib/Upload/ResizeUpload.php",
+            "lib/Upload/Watermark.php"
         ]
     }
 }
