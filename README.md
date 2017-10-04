@@ -43,7 +43,7 @@ install with the latest version.
 3. Include the class in your project file: `include('./Lib/Upload.php');`
 
 
-## Simple Example
+### Simple Example
 -----------------
 ```php
 include("../autoload.php");
@@ -61,7 +61,7 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Example random name 
+### Example random name 
 -----------------
 ```php
 include("../autoload.php");
@@ -79,7 +79,7 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Example maximum allowed size
+### Example maximum allowed size
 -----------------
 ```php
 include("../autoload.php");
@@ -98,7 +98,7 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Example disable mime checker
+### Example disable mime checker
 -----------------
 ```php
 include("../autoload.php");
@@ -117,7 +117,7 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Example resize image
+### Example resize image
 -----------------
 ```php
 include("../autoload.php");
@@ -136,7 +136,7 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Example custom mime checker
+### Example custom mime checker
 -----------------
 ```php
 include("../autoload.php");
@@ -163,7 +163,7 @@ if (!$upload->was_uploaded) {
 }
 ```
 
-## Example multiple upload
+### Example multiple upload
 -----------------
 ```php
 include("../autoload.php");
@@ -190,3 +190,107 @@ foreach ($file["tmp_name"] as $k => $v) {
     echo "image {$i} sent successfully !";
 }
 ```
+
+### Example watermark upload
+-----------------
+```php
+include("../autoload.php");
+
+$upload = new Upload('img');
+$upload
+        ->file_name(true)
+        ->upload_to('upload/')
+        ->watermark('watermark.png', 'center') // insert watermark, set align center, botton_right or botton_right_small
+        ->run();
+
+if (!$upload->was_uploaded) {
+    die("Error : {$upload->error}");
+} else {
+    echo 'image sent successfully !';
+}
+```
+
+## External Examples
+-----------------
+
+You can use the classes `new ResizeUpload` and `new Waternark`
+in your projects without having to load the class Upload.
+
+### Upload image from base64 string
+-----------------
+```php
+function base64ToJpeg($base64_string) {
+  $data = explode(';', $base64_string);
+  $dataa = explode(',', $base64_string);
+  $part = explode("/", $data[0]);
+  $file = md5(uniqid(rand(), true)) . ".{$part[1]}"; // rand name + extension
+  if (!is_dir("upload/"))
+     mkdir("upload/");
+
+   $ifp = fopen("upload/{$file}", 'wb');
+   fwrite($ifp, base64_decode($dataa[1]));
+   fclose($ifp);
+   return $file;
+}
+
+if (!file_exists(self::base64ToJpeg($base64))
+   die("Upload error");
+
+```
+### Upload image from base64 string + External ResizeTo()
+-----------------
+```php
+if (!file_exists($filename = base64ToJpeg($base64))
+   die("Upload error");
+
+$resize = new ResizeImage($filename);
+$resize->resizeTo(660, 370, 'exact');
+$resize->saveImage($filename);
+
+```
+
+### Upload image from base64 string + External Watermak()
+-----------------
+```php
+if (!file_exists($filename = base64ToJpeg($base64))
+   die("Upload error");
+
+$watermark = new Watermark($filename);
+$watermark->setType(Watermark::CENTER); // align center
+$watermark->setWatermarkImage("images/watermark.png");
+$watermark->saveAs($filename);
+```
+
+
+### Example Upload image from base64 string + External ResizeTo() & Watermak()
+-----------------
+```php
+if (!file_exists($filename = base64ToJpeg($base64))
+   die("Upload error");
+        
+$resize = new ResizeImage($filename);
+$resize->resizeTo(660, 370, 'exact');
+$resize->saveImage($filename);
+        
+$watermark = new Watermark($filename);
+$watermark->setType(Watermark::CENTER); // align center
+$watermark->setWatermarkImage("images/watermark.png");
+$watermark->saveAs($filename);
+```
+
+## Donations
+
+### BITCOIN (BTC)
+``1JZVdm8HJUNV5uDrLeQbFph4Hgv4fTDUYb``
+
+### ETHEREUM (ETH) 
+``0x78e7c45d8c4ef58034e5dd1f2cfed1cc665f7e11``
+
+### DASH (DSH) : 
+``XhFyk1RA8rfhhFtbNcaZgxBMcAoSCDY1gJ``
+
+### Litecoin (LTC)
+``LhGUQb2cCo6kA1nNjhPrsqE3Q3W54qdpkr``
+
+### DOGER (DGE)
+``DJ1C6eE7w1SzkFo2KMz6P6my89VqFombwn``
