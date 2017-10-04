@@ -213,7 +213,7 @@ if (!$upload->was_uploaded) {
 ## External Examples
 -----------------
 
-You can use the classes `new ResizeUpload` and `new Waternark`
+You can use the classes `new ResizeUpload()` and `new Waternark()`
 in your projects without having to load the class Upload.
 
 ### Upload image from base64 string
@@ -279,18 +279,19 @@ $watermark->saveAs($filename);
 ```
 
 ## Donations
+-----------------
 
-### BITCOIN (BTC)
+### (BTC) BITCOIN
 ``1JZVdm8HJUNV5uDrLeQbFph4Hgv4fTDUYb``
 
-### ETHEREUM (ETH) 
+### (ETH) ETHEREUM
 ``0x78e7c45d8c4ef58034e5dd1f2cfed1cc665f7e11``
 
-### DASH (DSH) : 
+### (DSH) DASH
 ``XhFyk1RA8rfhhFtbNcaZgxBMcAoSCDY1gJ``
 
-### Litecoin (LTC)
+### (LTC) LITECOIN
 ``LhGUQb2cCo6kA1nNjhPrsqE3Q3W54qdpkr``
 
-### DOGER (DGE)
+### (DGE) DOGER
 ``DJ1C6eE7w1SzkFo2KMz6P6my89VqFombwn``
