@@ -33,7 +33,7 @@ themselves. To create libraries/packages please read the
 ## Updating Composer
 -----------------
 
-Running `php composer.phar self-update` or equivalent will update a phar
+Running `php composer.phar self-update` or `composer update` is equivalent you will update a phar
 install with the latest version.
 
 ## Installation from Source
@@ -191,7 +191,7 @@ foreach ($file["tmp_name"] as $k => $v) {
 }
 ```
 
-### Example watermark upload
+### Example Watermark upload
 -----------------
 ```php
 include("../autoload.php");
@@ -213,7 +213,7 @@ if (!$upload->was_uploaded) {
 ## External Examples
 -----------------
 
-You can use the classes `new ResizeUpload()` and `new Waternark()`
+You can use the classes `new ResizeUpload()` and `new Watermark()`
 in your projects without having to load the class Upload.
 
 ### Upload image from base64 string
@@ -249,7 +249,7 @@ $resize->saveImage($filename);
 
 ```
 
-### Upload image from base64 string + External Watermak()
+### Upload image from base64 string + External Watermark()
 -----------------
 ```php
 if (!file_exists($filename = base64ToJpeg($base64))
@@ -262,7 +262,7 @@ $watermark->saveAs($filename);
 ```
 
 
-### Example Upload image from base64 string + External ResizeTo() & Watermak()
+### Example Upload image from base64 string + External ResizeTo() & Watermark()
 -----------------
 ```php
 if (!file_exists($filename = base64ToJpeg($base64))
