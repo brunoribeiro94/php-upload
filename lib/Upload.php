@@ -353,7 +353,7 @@ class Upload {
                     $resize->resizeTo($this->image_x, $this->image_y, $this->resize_option);
                     $resize->saveImage($path);
                 }
-                if (isset($this->watermark)) {
+                if ($this->watermark) {
                     if (!file_exists($this->watermark)) {
                         $this->was_uploaded = false;
                         $this->error = "watermark can not be loaded.";
