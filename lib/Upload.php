@@ -5,7 +5,7 @@
  * Easy class upload files in PHP
  * 
  * @see README.md
- * @version 0.6
+ * @version 0.6.1
  * @access public
  * @package Upload
  * @todo added Border
@@ -353,7 +353,7 @@ class Upload {
                     $resize->resizeTo($this->image_x, $this->image_y, $this->resize_option);
                     $resize->saveImage($path);
                 }
-                if ($this->watermark) {
+                if (!empty($this->watermark)) {
                     if (!file_exists($this->watermark)) {
                         $this->was_uploaded = false;
                         $this->error = "watermark can not be loaded.";
