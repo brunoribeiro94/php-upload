@@ -5,7 +5,7 @@
  * Easy class upload files in PHP
  * 
  * @see README.md
- * @version 0.6.1
+ * @version 0.5
  * @access public
  * @package Upload
  * @todo added Border
@@ -124,22 +124,6 @@ class Upload {
      * @var boolean 
      */
     private $get_auto_create_path = true;
-
-    /**
-     * Watermark full path
-     * Set false to disable
-     * 
-     * @var type 
-     */
-    private $watermark = false;
-
-    /**
-     * Position to set watermark
-     * Set <b>center</b>, <b>botton_right</b> or <b>botton_right_small</b>
-     * 
-     * @var ENUM
-     */
-    private $watermark_align = 'center';
 
     /**
      * Allowed MIME type
@@ -296,7 +280,7 @@ class Upload {
                 return false;
             }
         } elseif (!is_dir($this->upload_to)) {
-            $this->error = "Destination directory doesn't exist. Can't carry on a process";
+            $this->error =  "Destination directory doesn't exist. Can't carry on a process";
             return false;
         }
 
@@ -352,29 +336,6 @@ class Upload {
                     $resize = new ResizeImage($path);
                     $resize->resizeTo($this->image_x, $this->image_y, $this->resize_option);
                     $resize->saveImage($path);
-                }
-                if (!empty($this->watermark)) {
-                    if (!file_exists($this->watermark)) {
-                        $this->was_uploaded = false;
-                        $this->error = "watermark can not be loaded.";
-                        return false;
-                    }
-                    switch ($this->watermark_align) {
-                        case 'botton_right';
-                            $type = Watermark::BOTTOM_RIGHT;
-                            break;
-                        case 'botton_right_small';
-                            $type = Watermark::BOTTOM_RIGHT_SMALL;
-                            break;
-                        case 'center':
-                        default:
-                            $type = Watermark::CENTER;
-                            break;
-                    }
-                    $watermark = new Watermark($path);
-                    $watermark->setType($type);
-                    $watermark->setWatermarkImage($this->watermark);
-                    $watermark->saveAs($path);
                 }
                 return true;
             } else {
@@ -528,22 +489,7 @@ class Upload {
      * Set the variable this function to choose the scale option for the image
      * 
      * @access public
-     * @param string $filename Set full path from watermark PNG 
-     * @param ENUM $align Set <b>center</b>, <b>botton_right</b> or <b>botton_right_small</b>
-     * @return \Upload
-     */
-    public function watermark($filename = FALSE, $align = "center") {
-        $this->watermark = $filename;
-        $this->watermark_align = $align;
-        return $this;
-    }
-
-    /**
-     * 
-     * Set the variable this function to choose the scale option for the image
-     * 
-     * @access public
-     * @param string $option Default value is default, but you can use too <b>exact</b> or  <b>maxwidth</b> or <b>maxheight</b>
+     * @param string $option Default value is default, but you can use too <b>exact</b> or <b>maxwidth</b> or <b>maxheight</b> or <b>proportionally</b>
      * 
      * @return \Upload
      */
