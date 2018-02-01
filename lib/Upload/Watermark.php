@@ -3,10 +3,8 @@
 /*
  * Class Watermark
  * require GD librabry
- *
  * 
  */
-
 class Watermark {
 
     /**
@@ -93,28 +91,44 @@ class Watermark {
      * @return boolean
      */
     private function process() {
-        $watermark = imagecreatefrompng($this->watermark);
+        $watermark = $this->getImage($this->watermark);
         if ($watermark) {
-            $image = imagecreatefromjpeg($this->image);
+            $image = $this->getImage($this->image);
             if ($image) {
                 switch ($this->type) {
                     case Watermark::BOTTOM_RIGHT:
                         return $this->watermark_bottom_right($image, $watermark);
-                        break;
                     case Watermark::CENTER:
                         return $this->watermark_center($image, $watermark);
-                        break;
                     case Watermark::BOTTOM_RIGHT_SMALL:
                         return $this->watermark_bottom_right_small($image, $watermark);
-                        break;
                 }
                 return true;
-            } else {
-                return false;
             }
-        } else {
             return false;
         }
+        return false;
+    }
+
+    private function getImage($path) {
+        $mime = mime_content_type($path);
+        switch ($mime) {
+            case 'image/png':
+                $img = imagecreatefrompng($path);
+                break;
+            case 'image/gif':
+                $img = imagecreatefromgif($path);
+                break;
+            case 'image/jpeg':
+                $img = imagecreatefromjpeg($path);
+                break;
+            case 'image/bmp':
+                $img = imagecreatefrombmp($path);
+                break;
+            default:
+                $img = null;
+        }
+        return $img;
     }
 
     /**
